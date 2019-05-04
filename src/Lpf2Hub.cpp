@@ -420,6 +420,7 @@ void Lpf2Hub::shutDownHub()
 {
     byte shutdownCommand[2] = {0x02, 0X01};
     WriteValue(shutdownCommand, 2);
+    _isConnected = false;
 }
 
 /**
