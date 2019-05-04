@@ -529,3 +529,11 @@ bool Lpf2Hub::isConnected()
 {
     return _isConnected;
 }
+
+/**
+ * @brief Retrieve the BLE address
+ */
+BLEAddress *Lpf2Hub::bleAddress() const
+{
+    return _pServerAddress;
+}

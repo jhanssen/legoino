@@ -72,6 +72,7 @@ public:
   bool connectHub();
   bool isConnected();
   bool isConnecting();
+  BLEAddress *bleAddress() const;
 
   void setHubName(char name[]);
   void shutDownHub();
