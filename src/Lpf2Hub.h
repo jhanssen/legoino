@@ -78,7 +78,7 @@ private:
 
 public:
   Lpf2Hub();
-  void init();
+  void init(BLEAddress* hub = nullptr);
   bool connectHub();
   bool isConnected() const;
   bool isConnecting() const;

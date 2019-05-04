@@ -361,21 +361,25 @@ Lpf2Hub::Lpf2Hub(){};
 /**
  * @brief Init function set the UUIDs and scan for the Hub
  */
-void Lpf2Hub::init()
+void Lpf2Hub::init(BLEAddress* hub)
 {
+    _pServerAddress = hub ? new BLEAddress(*hub) : nullptr;
     _isConnected = false;
-    _isConnecting = false;
+    _isConnecting = hub != nullptr;
     _bleUuid = BLEUUID(LPF2_UUID);
     _charachteristicUuid = BLEUUID(LPF2_CHARACHTERISTIC);
     _hubType = BOOST_MOVE_HUB;
 
     BLEDevice::init("");
-    BLEScan *pBLEScan = BLEDevice::getScan();
 
-    pBLEScan->setAdvertisedDeviceCallbacks(new Lpf2HubAdvertisedDeviceCallbacks(this));
+    if (!hub) {
+        BLEScan *pBLEScan = BLEDevice::getScan();
 
-    pBLEScan->setActiveScan(true);
-    pBLEScan->start(30);
+        pBLEScan->setAdvertisedDeviceCallbacks(new Lpf2HubAdvertisedDeviceCallbacks(this));
+
+        pBLEScan->setActiveScan(true);
+        pBLEScan->start(30);
+    }
 }
 
 /**
@@ -421,6 +425,8 @@ void Lpf2Hub::shutDownHub()
     byte shutdownCommand[2] = {0x02, 0X01};
     WriteValue(shutdownCommand, 2);
     _isConnected = false;
+    delete _pServerAddress;
+    _pServerAddress = nullptr;
 }
 
 /**
