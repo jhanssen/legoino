@@ -66,6 +66,16 @@ private:
   // Notification callbacks
   ButtonCallback _buttonCallback = nullptr;
 
+  BLEUUID _bleUuid;
+  BLEUUID _charachteristicUuid;
+  BLEAddress *_pServerAddress;
+  BLERemoteCharacteristic *_pRemoteCharacteristic;
+
+  boolean _isConnecting;
+  boolean _isConnected;
+
+  friend class Lpf2HubAdvertisedDeviceCallbacks;
+
 public:
   Lpf2Hub();
   void init();
@@ -96,13 +106,6 @@ public:
   void parsePortAction(uint8_t *pData);
   void notifyCallback(BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify);
   void activateHubUpdates();
-  BLEUUID _bleUuid;
-  BLEUUID _charachteristicUuid;
-  BLEAddress *_pServerAddress;
-  BLERemoteCharacteristic *_pRemoteCharacteristic;
-
-  boolean _isConnecting;
-  boolean _isConnected;
 };
 
 #endif
