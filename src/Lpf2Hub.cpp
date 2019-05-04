@@ -517,7 +517,7 @@ bool Lpf2Hub::connectHub()
  * @brief Retrieve the connection state. The BLE client (ESP32) has found a service with the desired UUID (HUB)
  * If this state is available, you can try to connect to the Hub
  */
-bool Lpf2Hub::isConnecting()
+bool Lpf2Hub::isConnecting() const
 {
     return _isConnecting;
 }
@@ -525,7 +525,7 @@ bool Lpf2Hub::isConnecting()
 /**
  * @brief Retrieve the connection state. The BLE client (ESP32) is connected to the server (HUB)
  */
-bool Lpf2Hub::isConnected()
+bool Lpf2Hub::isConnected() const
 {
     return _isConnected;
 }

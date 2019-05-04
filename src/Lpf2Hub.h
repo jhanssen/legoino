@@ -70,8 +70,8 @@ public:
   Lpf2Hub();
   void init();
   bool connectHub();
-  bool isConnected();
-  bool isConnecting();
+  bool isConnected() const;
+  bool isConnecting() const;
   BLEAddress *bleAddress() const;
 
   void setHubName(char name[]);
