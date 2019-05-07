@@ -33,6 +33,26 @@ class Lpf2HubAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
     }
 };
 
+class Lpf2HubClientCallback : public BLEClientCallbacks {
+    Lpf2Hub *_lpf2Hub;
+
+public:
+    Lpf2HubClientCallback(Lpf2Hub *lpf2Hub) : BLEClientCallbacks()
+    {
+        _lpf2Hub = lpf2Hub;
+    }
+
+    void onConnect(BLEClient* pclient)
+    {
+    }
+
+    void onDisconnect(BLEClient* pclient)
+    {
+        _lpf2Hub->_isConnecting = false;
+        _lpf2Hub->_isConnected = false;
+    }
+};
+
 /**
  * @brief Write value to the remote characteristic
  * @param [in] command byte array which contains the ble command
@@ -482,33 +502,49 @@ void Lpf2Hub::activateHubUpdates()
  */
 bool Lpf2Hub::connectHub()
 {
+    if (_isConnected)
+        return true;
+    if (!_isConnecting)
+        return false;
+
+    const bool newConnection = _pClient == nullptr;
+    if (newConnection) {
+        _pClient = BLEDevice::createClient();
+        _pClient->setClientCallbacks(new Lpf2HubClientCallback(this));
+    }
+
     BLEAddress pAddress = *_pServerAddress;
-    BLEClient *pClient = BLEDevice::createClient();
 
     // Connect to the remove BLE Server (HUB)
-    pClient->connect(pAddress);
-
-    Serial.println("get pClient");
-    BLERemoteService *pRemoteService = pClient->getService(_bleUuid);
-    if (pRemoteService == nullptr)
-    {
-        Serial.println("get pClient failed");
-        return false;
-    }
-    Serial.println("get pRemoteService");
-
-    _pRemoteCharacteristic = pRemoteService->getCharacteristic(_charachteristicUuid);
-    if (_pRemoteCharacteristic == nullptr)
-    {
-        Serial.println("get pRemoteService failed");
-
+    _pClient->connect(pAddress);
+    if (!_pClient->isConnected()) {
+        Serial.println("Unable to connect");
         return false;
     }
 
-    // register notifications (callback function) for the characteristic
-    if (_pRemoteCharacteristic->canNotify())
-    {
-        //_pRemoteCharacteristic->registerForNotify(notifyCallback);
+    if (newConnection) {
+        Serial.println("get pClient");
+        BLERemoteService *pRemoteService = _pClient->getService(_bleUuid);
+        if (pRemoteService == nullptr)
+        {
+            Serial.println("get pClient failed");
+            return false;
+        }
+
+        Serial.println("get pRemoteService");
+        _pRemoteCharacteristic = pRemoteService->getCharacteristic(_charachteristicUuid);
+        if (_pRemoteCharacteristic == nullptr)
+        {
+            Serial.println("get pRemoteService failed");
+
+            return false;
+        }
+
+        // register notifications (callback function) for the characteristic
+        if (_pRemoteCharacteristic->canNotify())
+        {
+            //_pRemoteCharacteristic->registerForNotify(notifyCallback);
+        }
     }
 
     activateHubUpdates();

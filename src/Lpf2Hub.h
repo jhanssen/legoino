@@ -69,12 +69,14 @@ private:
   BLEUUID _bleUuid;
   BLEUUID _charachteristicUuid;
   BLEAddress *_pServerAddress;
+  BLEClient *_pClient { nullptr };
   BLERemoteCharacteristic *_pRemoteCharacteristic;
 
   boolean _isConnecting;
   boolean _isConnected;
 
   friend class Lpf2HubAdvertisedDeviceCallbacks;
+  friend class Lpf2HubClientCallback;
 
 public:
   Lpf2Hub();
